@@ -1,0 +1,77 @@
+//CalculatorConroller.java
+package mvc_calculator;
+
+public class CalculatorController {
+    private CalculatorModel model;
+    private CalculatorView view;
+
+    public CalculatorController(CalculatorModel m, CalculatorView v) {
+        model = m; view = v;
+    }
+
+    public void start() {
+        double a = view.getNumber("Enter first number: ");
+        double b = view.getNumber("Enter second number: ");
+        String op = view.getOperation();
+
+        model.setNumbers(a, b);
+
+        switch (op) {
+            case "+": model.add(); break;
+            case "-": model.subtract(); break;
+            case "*": model.multiply(); break;
+            case "/": model.divide(); break;
+            default:  System.out.println("Invalid operation!"); return;
+        }
+        view.showResult(model.getResult());
+    }
+}
+
+//CalculatorModel.java
+package mvc_calculator;
+
+public class CalculatorModel {
+    private double num1, num2, result;
+
+    public void setNumbers(double a, double b) {
+        num1 = a; num2 = b;
+    }
+
+    public void add()       { result = num1 + num2; }
+    public void subtract()  { result = num1 - num2; }
+    public void multiply()  { result = num1 * num2; }
+    public void divide()    { result = (num2 == 0) ? 0 : num1 / num2; }
+
+    public double getResult() { return result; }
+}
+
+//CalculatorView.java
+package mvc_calculator;
+import java.util.Scanner;
+
+public class CalculatorView {
+    private Scanner sc = new Scanner(System.in);
+
+    public double getNumber(String msg) {
+        System.out.print(msg);
+        return sc.nextDouble();
+    }
+    public String getOperation() {
+        System.out.print("Enter operation (+ - * /): ");
+        return sc.next();
+    }
+    public void showResult(double res) {
+        System.out.println("Result = " + res);
+    }
+}
+//MainCalculator.java
+package mvc_calculator;
+
+public class MainCalculator {
+    public static void main(String[] args) {
+        CalculatorModel model = new CalculatorModel();
+        CalculatorView view = new CalculatorView();
+        CalculatorController controller = new CalculatorController(model, view);
+        controller.start();
+    }
+}
