@@ -76,7 +76,7 @@ public class MainCalculator {
     }
 }
 
-
+----------------------------------------------->
 //OCP
 
 //OCPShapeDemo
@@ -110,7 +110,7 @@ public class OCPShapeDemo {
             System.out.println(s.getClass().getSimpleName()+" Area = "+s.calculateArea());
     }
 }
-
+----------------------------------------------------->
 //SRPStudentDemo
 import java.io.FileWriter;
 import java.io.IOException;
@@ -143,7 +143,7 @@ public class SRPStudentDemo {
         new StudentRepository().save(s,avg,g);
     }
 }
-
+------------------------------------------------------------->
 //ISPWorkerDemo
 interface Workable { void work(); }
 interface Feedable { void eat(); }
@@ -168,7 +168,7 @@ public class ISPWorkerDemo {
         RobotWorker r=new RobotWorker(); r.work();r.getPaid();
     }
 }
-
+------------------------------------------------------>
 //LSPBirdDemo
 class Bird { void eat(){ System.out.println("Bird eating"); } }
 class FlyingBird extends Bird { void fly(){ System.out.println("Bird flying"); } }
