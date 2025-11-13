@@ -1,0 +1,244 @@
+//WEATHER---->Create project → ObserverPatternDemo
+Package → observerpattern
+Create files WeatherStation.java, ObserverPatternDemo.java
+
+//Display
+package observerpattern;
+
+public class Display implements Observer {
+    @Override
+    public void update(float t, float h, float p) {
+        System.out.printf("Temp: %.1f °C | Humidity: %.1f%% | Pressure: %.1f%n", t, h, p);
+    }
+}
+//ObserverPatternDemo
+package observerpattern;
+
+public class ObserverPatternDemo {
+    public static void main(String[] args) {
+        WeatherStation ws = new WeatherStation();
+        Display display = new Display();
+
+        ws.addObserver(display);
+
+        ws.setMeasurements(30, 65, 1012);
+        ws.setMeasurements(32, 70, 1008);
+    }
+}
+//WeatherStation
+package observerpattern;
+
+import java.util.ArrayList;
+import java.util.List;
+
+public class WeatherStation implements Subject {
+    private List<Observer> observers = new ArrayList<>();
+    private float temperature, humidity, pressure;
+
+    public void setMeasurements(float t, float h, float p) {
+        this.temperature = t;
+        this.humidity = h;
+        this.pressure = p;
+        notifyObservers();
+    }
+
+    @Override
+    public void addObserver(Observer o) { observers.add(o); }
+
+    @Override
+    public void removeObserver(Observer o) { observers.remove(o); }
+
+    @Override
+    public void notifyObservers() {
+        for (Observer o : observers) {
+            o.update(temperature, humidity, pressure);
+        }
+    }
+}
+Ceiling fan-------------->
+//CommandDemo
+package commandpattern;
+
+
+
+interface Command {
+ void execute();
+ void undo();
+}
+
+
+class CeilingFan {
+ private int speed;
+ public void high() { speed = 3; System.out.println("Ceiling fan on High"); }
+ public void medium() { speed = 2; System.out.println("Ceiling fan on Medium"); }
+ public void off() { speed = 0; System.out.println("Ceiling fan off"); }
+ public int getSpeed() { return speed; }
+}
+
+
+
+class CeilingFanHighCommand implements Command {
+ CeilingFan fan; int prev;
+ CeilingFanHighCommand(CeilingFan fan){this.fan=fan;}
+ public void execute(){ prev=fan.getSpeed(); fan.high(); }
+ public void undo(){ if(prev==2)fan.medium(); else fan.off(); }
+}
+
+
+class RemoteControl {
+ Command slot;
+ void setCommand(Command c){slot=c;}
+ void pressButton(){slot.execute();}
+ void pressUndo(){slot.undo();}
+}
+
+
+public class CommandDemo {
+ public static void main(String[] args) {
+     CeilingFan fan = new CeilingFan();
+     Command high = new CeilingFanHighCommand(fan);
+     RemoteControl remote = new RemoteControl();
+     remote.setCommand(high);
+     remote.pressButton();
+     remote.pressUndo();
+ }
+}
+Loan------------------------------------------>
+//ChainDemo
+package chainpattern;
+
+abstract class Approver {
+    protected Approver next;
+    public void setNext(Approver next){ this.next=next; }
+    public abstract void approveLoan(int amount);
+}
+
+class Manager extends Approver {
+    public void approveLoan(int amount){
+        if(amount<=1000) System.out.println("Manager approved ₹"+amount);
+        else if(next!=null) next.approveLoan(amount);
+    }
+}
+
+class SeniorManager extends Approver {
+    public void approveLoan(int amount){
+        if(amount<=10000) System.out.println("Senior Manager approved ₹"+amount);
+        else if(next!=null) next.approveLoan(amount);
+    }
+}
+
+class Director extends Approver {
+    public void approveLoan(int amount){
+        if(amount<=100000) System.out.println("Director approved ₹"+amount);
+        else System.out.println("Loan requires board approval.");
+    }
+}
+
+public class ChainDemo {
+    public static void main(String[] args) {
+        Manager m = new Manager();
+        SeniorManager sm = new SeniorManager();
+        Director d = new Director();
+        m.setNext(sm); sm.setNext(d);
+
+        m.approveLoan(800);
+        m.approveLoan(8000);
+        m.approveLoan(80000);
+    }
+}
+MEMENTO -------------------------------------------------------->
+//MementoDemo
+package mementopattern;
+
+class GumballMachine {
+    private String state = "No Coin";
+    public void insertCoin(){ state="Coin Inserted"; }
+    public void turnCrank(){ state="Gumball Dispensed"; }
+    public void removeCoin(){ state="No Coin"; }
+    public String getState(){ return state; }
+    public void setState(String s){ state=s; }
+
+    public Memento saveToMemento(){ return new Memento(state); }
+    public void restoreFromMemento(Memento m){ state=m.getState(); }
+
+    static class Memento {
+        private final String state;
+        Memento(String s){state=s;}
+        String getState(){return state;}
+    }
+}
+
+public class MementoDemo {
+    public static void main(String[] args) {
+        GumballMachine g = new GumballMachine();
+        g.insertCoin();
+        GumballMachine.Memento saved = g.saveToMemento();
+        g.turnCrank();
+        System.out.println("Current: " + g.getState());
+        g.restoreFromMemento(saved);
+        System.out.println("Restored: " + g.getState());
+    }
+}
+Remote Control==================================================================>
+//RemoteData
+package remotepattern;
+
+interface Command { void execute(); }
+
+class Light {
+    void on(){System.out.println("Light ON");}
+    void off(){System.out.println("Light OFF");}
+}
+
+class LightOnCommand implements Command {
+    Light light; LightOnCommand(Light l){light=l;}
+    public void execute(){light.on();}
+}
+
+class LightOffCommand implements Command {
+    Light light; LightOffCommand(Light l){light=l;}
+    public void execute(){light.off();}
+}
+
+class RemoteControl {
+    Command command;
+    void setCommand(Command c){command=c;}
+    void press(){command.execute();}
+}
+
+public class RemoteDemo {
+    public static void main(String[] args) {
+        Light light = new Light();
+        RemoteControl remote = new RemoteControl();
+        remote.setCommand(new LightOnCommand(light));
+        remote.press();
+        remote.setCommand(new LightOffCommand(light));
+        remote.press();
+    }
+}
+BREAKFAST--------------------------------------------------------------->
+
+//IteratorDemo
+package iteratorpattern;
+import java.util.*;
+
+class Menu implements Iterable<String> {
+    private List<String> items = new ArrayList<>();
+    public void addItem(String item){ items.add(item); }
+    public Iterator<String> iterator(){ return items.iterator(); }
+}
+
+public class IteratorDemo {
+    public static void main(String[] args) {
+        Menu breakfast = new Menu();
+        breakfast.addItem("Idli");
+        breakfast.addItem("Dosa");
+        breakfast.addItem("Poha");
+
+        System.out.println("Breakfast Menu:");
+        for(String item: breakfast){
+            System.out.println("- " + item);
+        }
+    }
+}
+
