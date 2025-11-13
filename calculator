@@ -75,3 +75,96 @@ public class MainCalculator {
         controller.start();
     }
 }
+
+
+//OCP
+
+//OCPShapeDemo
+abstract class Shape {
+    abstract double calculateArea();
+}
+
+class Circle extends Shape {
+    double r; Circle(double r){ this.r=r; }
+    double calculateArea(){ return Math.PI*r*r; }
+}
+
+class Square extends Shape {
+    double s; Square(double s){ this.s=s; }
+    double calculateArea(){ return s*s; }
+}
+
+class Triangle extends Shape {
+    double b,h; Triangle(double b,double h){ this.b=b; this.h=h; }
+    double calculateArea(){ return 0.5*b*h; }
+}
+
+public class OCPShapeDemo {
+    public static void main(String[] args) {
+        Shape[] arr = {
+            new Circle(3),
+            new Square(4),
+            new Triangle(5,6)
+        };
+        for(Shape s:arr)
+            System.out.println(s.getClass().getSimpleName()+" Area = "+s.calculateArea());
+    }
+}
+
+//SRPStudentDemo
+import java.io.FileWriter;
+import java.io.IOException;
+
+class Student {
+    String name; int[] marks;
+    Student(String n,int[] m){ name=n; marks=m; }
+}
+
+class GradeCalculator {
+    double avg(int[] m){ int s=0; for(int x:m)s+=x; return s/(double)m.length; }
+    char grade(double a){ return (a>=90)?'A':(a>=75)?'B':(a>=60)?'C':(a>=40)?'D':'F'; }
+}
+
+class StudentRepository {
+    void save(Student s,double avg,char g){
+        try(FileWriter f=new FileWriter("students.txt",true)){
+            f.write(s.name+" Avg:"+avg+" Grade:"+g+"\n");
+        }catch(IOException e){ e.printStackTrace(); }
+    }
+}
+
+public class SRPStudentDemo {
+    public static void main(String[] args){
+        Student s=new Student("Prachi",new int[]{85,90,88});
+        GradeCalculator gc=new GradeCalculator();
+        double avg=gc.avg(s.marks);
+        char g=gc.grade(avg);
+        System.out.println("Average="+avg+" Grade="+g);
+        new StudentRepository().save(s,avg,g);
+    }
+}
+
+//ISPWorkerDemo
+interface Workable { void work(); }
+interface Feedable { void eat(); }
+interface Restable { void sleep(); }
+interface Payable { void getPaid(); }
+
+class HumanWorker implements Workable,Feedable,Restable,Payable{
+    public void work(){ System.out.println("Human working"); }
+    public void eat(){ System.out.println("Human eating"); }
+    public void sleep(){ System.out.println("Human sleeping"); }
+    public void getPaid(){ System.out.println("Human got salary"); }
+}
+class RobotWorker implements Workable,Payable{
+    public void work(){ System.out.println("Robot working"); }
+    public void getPaid(){ System.out.println("Robot battery charged"); }
+}
+
+public class ISPWorkerDemo {
+    public static void main(String[] args){
+        HumanWorker h=new HumanWorker(); h.work();h.eat();h.sleep();h.getPaid();
+        System.out.println();
+        RobotWorker r=new RobotWorker(); r.work();r.getPaid();
+    }
+}
