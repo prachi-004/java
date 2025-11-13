@@ -1,0 +1,97 @@
+Project → UserRegistration
+Dependencies: Spring Web, Spring Boot DevTools, Validation (Spring Boot Starter Validation)
+Package: com.user
+//DemoUserRegistrationApplication
+package com.user;
+
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+
+@SpringBootApplication
+public class DemoUserRegistrationApplication {
+
+	public static void main(String[] args) {
+		SpringApplication.run(DemoUserRegistrationApplication.class, args);
+	}
+
+}
+//User
+package com.user;
+
+import jakarta.validation.constraints.*;
+
+public class User {
+    @NotBlank(message="Name is required")
+    private String name;
+
+    @Email(message="Invalid email")
+    private String email;
+
+    @Size(min=6, message="Password must be at least 6 characters")
+    private String password;
+
+    public String getName() { return name; }
+    public void setName(String name) { this.name = name; }
+    public String getEmail() { return email; }
+    public void setEmail(String email) { this.email = email; }
+    public String getPassword() { return password; }
+    public void setPassword(String password) { this.password = password; }
+}
+
+//UserController
+package com.user;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.*;
+import com.user.User;
+import com.user.UserService;
+
+@RestController
+@RequestMapping("/user")
+public class UserController {
+    @Autowired
+    private UserService service;
+
+    @PostMapping("/register")
+    public String register(@Validated @RequestBody User user) {
+        return service.registerUser(user);
+    }
+
+    @GetMapping("/login")
+    public String login(@RequestParam String email, @RequestParam String password) {
+        return service.login(email, password);
+    }
+}
+//UserRegistrationApplication
+package com.user;
+
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+
+@SpringBootApplication
+public class UserRegistrationApplication {
+    public static void main(String[] args) {
+        SpringApplication.run(UserRegistrationApplication.class, args);
+        System.out.println("User Registration App Running...");
+    }
+}
+//UserServicce
+package com.user;
+
+import org.springframework.stereotype.Service;
+import com.user.User;
+
+@Service
+public class UserService {
+    public String registerUser(User user) {
+        return "User registered successfully: " + user.getName();
+    }
+
+    public String login(String email, String password) {
+        if("test@example.com".equals(email) && "password".equals(password))
+            return "Login successful!";
+        else
+            return "Invalid credentials!";
+    }
+}
