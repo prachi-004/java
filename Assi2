@@ -1,0 +1,223 @@
+LOGGER----->
+//LoggerService
+package loggerdemo;
+public class LoggerService {
+    private static LoggerService instance;
+    private LoggerService() { System.out.println("LoggerService started..."); }
+    public static LoggerService getInstance() {
+        if (instance == null) instance = new LoggerService();
+        return instance;
+    }
+    public void log(String msg) { System.out.println("LOG: " + msg); }
+
+    public static void main(String[] args) {
+        LoggerService l1 = LoggerService.getInstance();
+        l1.log("First log");
+        LoggerService l2 = LoggerService.getInstance();
+        l2.log("Second log");
+        System.out.println(l1 == l2);
+    }
+}
+FASCTORY---------------------->
+//AbstractFactoryDemo
+package mobilefactory;
+
+interface Camera { void takePhoto(); }
+interface VideoRecorder { void recordVideo(); }
+
+interface MobileFactory {
+    Camera createCamera();
+    VideoRecorder createVideoRecorder();
+}
+
+class SamsungFactory implements MobileFactory {
+    public Camera createCamera() { return new SamsungCamera(); }
+    public VideoRecorder createVideoRecorder() { return new SamsungVideoRecorder(); }
+}
+
+class AppleFactory implements MobileFactory {
+    public Camera createCamera() { return new AppleCamera(); }
+    public VideoRecorder createVideoRecorder() { return new AppleVideoRecorder(); }
+}
+
+class SamsungCamera implements Camera {
+    public void takePhoto() { System.out.println("Samsung Camera taking photo."); }
+}
+
+class SamsungVideoRecorder implements VideoRecorder {
+    public void recordVideo() { System.out.println("Samsung Video recording."); }
+}
+
+class AppleCamera implements Camera {
+    public void takePhoto() { System.out.println("Apple Camera taking photo."); }
+}
+
+class AppleVideoRecorder implements VideoRecorder {
+    public void recordVideo() { System.out.println("Apple Video recording."); }
+}
+
+public class AbstractFactoryDemo {
+    public static void main(String[] args) {
+        MobileFactory samsung = new SamsungFactory();
+        samsung.createCamera().takePhoto();
+        samsung.createVideoRecorder().recordVideo();
+
+        MobileFactory apple = new AppleFactory();
+        apple.createCamera().takePhoto();
+        apple.createVideoRecorder().recordVideo();
+    }
+}
+PIZZA FACTORY--------------------->
+//FactoryMethodPizzaStore
+package pizza_factory;
+
+// Product
+abstract class Pizza {
+    String name;
+
+    void prepare() {
+        System.out.println("Preparing " + name);
+    }
+    void bake() {
+        System.out.println("Baking for 25 minutes at 350°F");
+    }
+    void cut() {
+        System.out.println("Cutting pizza into diagonal slices");
+    }
+    void box() {
+        System.out.println("Placing pizza in box");
+    }
+}
+
+// Concrete Products
+class NYStyleCheesePizza extends Pizza {
+    NYStyleCheesePizza() {
+        name = "NY Style Cheese Pizza";
+    }
+}
+
+class ChicagoStyleCheesePizza extends Pizza {
+    ChicagoStyleCheesePizza() {
+        name = "Chicago Style Cheese Pizza";
+    }
+
+    @Override
+    void cut() {
+        System.out.println("Cutting the pizza into square slices");
+    }
+}
+
+// Creator
+abstract class PizzaStore {
+    public Pizza orderPizza(String type) {
+        Pizza pizza = createPizza(type);
+        pizza.prepare();
+        pizza.bake();
+        pizza.cut();
+        pizza.box();
+        System.out.println(pizza.name + " is ready!\n");
+        return pizza;
+    }
+
+    protected abstract Pizza createPizza(String type);
+}
+
+// Concrete Creators
+class NYPizzaStore extends PizzaStore {
+    protected Pizza createPizza(String type) {
+        if (type.equalsIgnoreCase("cheese"))
+            return new NYStyleCheesePizza();
+        return null;
+    }
+}
+
+class ChicagoPizzaStore extends PizzaStore {
+    protected Pizza createPizza(String type) {
+        if (type.equalsIgnoreCase("cheese"))
+            return new ChicagoStyleCheesePizza();
+        return null;
+    }
+}
+
+public class FactoryMethodPizzaStore {
+    public static void main(String[] args) {
+        PizzaStore nyStore = new NYPizzaStore();
+        PizzaStore chiStore = new ChicagoPizzaStore();
+
+        nyStore.orderPizza("cheese");
+        chiStore.orderPizza("cheese");
+    }
+}
+TEST PROTOTYPE----------------------------------->
+//TestPrototype
+package prototype;
+interface Shape extends Cloneable {
+    Shape clone();
+    void draw();
+}
+
+class Circle implements Shape {
+    public void draw() { System.out.println("Drawing Circle"); }
+    public Shape clone() {
+        try { return (Shape) super.clone(); }
+        catch (CloneNotSupportedException e) { return null; }
+    }
+}
+
+class Rectangle implements Shape {
+    public void draw() { System.out.println("Drawing Rectangle"); }
+    public Shape clone() {
+        try { return (Shape) super.clone(); }
+        catch (CloneNotSupportedException e) { return null; }
+    }
+}
+
+public class TestPrototype {
+    public static void main(String[] args) {
+        Circle c1 = new Circle();
+        Circle c2 = (Circle) c1.clone();
+        c1.draw();
+        c2.draw();
+
+        Rectangle r1 = new Rectangle();
+        Rectangle r2 = (Rectangle) r1.clone();
+        r1.draw();
+        r2.draw();
+    }
+}
+Database connection------------------------------------->
+//DatabaseConnection
+package singleton_example;
+public class DatabaseConnection {
+    private static volatile DatabaseConnection instance;
+
+    private DatabaseConnection() {
+        System.out.println("Database connection established.");
+    }
+
+    public static DatabaseConnection getInstance() {
+        if (instance == null) {
+            synchronized (DatabaseConnection.class) {
+                if (instance == null) instance = new DatabaseConnection();
+            }
+        }
+        return instance;
+    }
+
+    public void getConnection() {
+        System.out.println("Using existing database connection.");
+    }
+
+    public static void main(String[] args) {
+        Thread t1 = new Thread(() -> {
+            DatabaseConnection conn = DatabaseConnection.getInstance();
+            conn.getConnection();
+        });
+        Thread t2 = new Thread(() -> {
+            DatabaseConnection conn = DatabaseConnection.getInstance();
+            conn.getConnection();
+        });
+        t1.start();
+        t2.start();
+    }
+}
