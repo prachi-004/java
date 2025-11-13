@@ -1,0 +1,91 @@
+Artifact: HRMessageService
+
+Dependency: Spring Web
+//HrNotificationApp
+package com.hr.hrnotification;
+
+
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+
+@SpringBootApplication
+public class HrNotificationApp {
+    public static void main(String[] args) {
+        SpringApplication.run(HrNotificationApp.class, args);
+        System.out.println("HR Notification Microservice Running...");
+    }
+}
+//HrnotificationApplication
+package com.hr.hrnotification;
+
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+
+@SpringBootApplication
+public class HrnotificationApplication {
+
+	public static void main(String[] args) {
+		SpringApplication.run(HrnotificationApplication.class, args);
+	}
+
+}
+//NotificationController
+package com.hr.hrnotification;
+
+
+import org.springframework.web.bind.annotation.*;
+
+@RestController
+@RequestMapping("/notify")
+public class NotificationController {
+
+    @GetMapping
+    public String sendMessage() {
+        return "You have been selected for an interview";
+    }
+}
+
+/*http://localhost:8080/notify
+*/
+
+Artifact: APIGateway
+
+Dependencies:
+✅ Spring Web
+✅ Spring Cloud Gateway
+
+//ApiGatewayApp
+package com.gateway.apigateway;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+
+@SpringBootApplication
+public class ApiGatewayApp {
+    public static void main(String[] args) {
+        SpringApplication.run(ApiGatewayApp.class, args);
+        System.out.println("API Gateway Running on port 8085...");
+    }
+}
+//ApigatewayApplication
+package com.gateway.apigateway;
+
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+
+@SpringBootApplication
+public class ApigatewayApplication {
+
+	public static void main(String[] args) {
+		SpringApplication.run(ApigatewayApplication.class, args);
+	}
+
+}
+/*Now call through gateway:
+
+👉 Students (via gateway)
+http://localhost:8085/students
+
+👉 Employees (via gateway)
+http://localhost:8085/employees/IT
+
+✅ It will forward requests to microservices.*/
