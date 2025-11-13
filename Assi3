@@ -1,0 +1,307 @@
+I/O DECODER-------------->
+// LowerCaseInputStream.java
+package decoratorpattern;
+import java.io.*;
+
+public class LowerCaseInputStream extends FilterInputStream {
+    public LowerCaseInputStream(InputStream in) {
+        super(in);
+    }
+
+    public int read() throws IOException {
+        int c = super.read();
+        return (c == -1 ? c : Character.toLowerCase((char)c));
+    }
+
+    public int read(byte[] b, int offset, int len) throws IOException {
+        int result = super.read(b, offset, len);
+        for (int i = offset; i < offset + result; i++) {
+            b[i] = (byte) Character.toLowerCase((char) b[i]);
+        }
+        return result;
+    }
+}
+ADAPTER PATTERN------------------------------------------------->
+// AdapterDemo.java
+package adapterpattern;
+import java.util.*;
+
+public class AdapterDemo {
+    public static void main(String[] args) {
+        Vector<String> vector = new Vector<>();
+        vector.add("Apple");
+        vector.add("Banana");
+        vector.add("Cherry");
+
+        Enumeration<String> enumeration = vector.elements();
+        Iterator<Object> iterator = new EnumIteratorAdapter(enumeration);
+
+        while (iterator.hasNext()) {
+            System.out.println(iterator.next());
+        }
+    }
+}
+// EnumIteratorAdapter.java
+package adapterpattern;
+import java.util.*;
+
+public class EnumIteratorAdapter implements Iterator<Object> {
+    Enumeration<?> enumeration;
+
+    public EnumIteratorAdapter(Enumeration<?> enumeration) {
+        this.enumeration = enumeration;
+    }
+
+    public boolean hasNext() {
+        return enumeration.hasMoreElements();
+    }
+
+    public Object next() {
+        return enumeration.nextElement();
+    }
+
+    public void remove() {
+        throw new UnsupportedOperationException();
+    }
+}
+BRIDGE-------------------------------------------->
+
+//BridgeDemo
+package bridgepattern;
+interface Workshop {
+    void work();
+}
+class Produce implements Workshop {
+    public void work() {
+        System.out.print("Produced");
+    }
+}
+class Assemble implements Workshop {
+    public void work() {
+        System.out.print(" and Assembled");
+    }
+}
+abstract class Vehicle {
+    protected Workshop workShop1;
+    protected Workshop workShop2;
+
+    protected Vehicle(Workshop w1, Workshop w2) {
+        this.workShop1 = w1;
+        this.workShop2 = w2;
+    }
+
+    abstract void manufacture();
+}
+class Car extends Vehicle {
+    public Car(Workshop w1, Workshop w2) {
+        super(w1, w2);
+    }
+
+    public void manufacture() {
+        System.out.print("Car ");
+        workShop1.work();
+        workShop2.work();
+        System.out.println();
+    }
+}
+class Bike extends Vehicle {
+    public Bike(Workshop w1, Workshop w2) {
+        super(w1, w2);
+    }
+
+    public void manufacture() {
+        System.out.print("Bike ");
+        workShop1.work();
+        workShop2.work();
+        System.out.println();
+    }
+}
+public class BridgeDemo {
+    public static void main(String[] args) {
+        Vehicle car = new Car(new Produce(), new Assemble());
+        car.manufacture();
+
+        Vehicle bike = new Bike(new Produce(), new Assemble());
+        bike.manufacture();
+    }
+}
+HEART ADAPTER-------------------------------------->
+//HeartAdapterDemo
+package adapterpattern2;
+
+interface HeartModel {
+    void beat();
+}
+
+class RealHeart implements HeartModel {
+    public void beat() { System.out.println("Heart is beating."); }
+}
+
+interface BeatModel {
+    void startBeat();
+}
+
+class HeartToBeatAdapter implements BeatModel {
+    private HeartModel heart;
+
+    public HeartToBeatAdapter(HeartModel heart) {
+        this.heart = heart;
+    }
+
+    public void startBeat() {
+        heart.beat();
+    }
+}
+
+public class HeartAdapterDemo {
+    public static void main(String[] args) {
+        HeartModel heart = new RealHeart();
+        BeatModel beatAdapter = new HeartToBeatAdapter(heart);
+        beatAdapter.startBeat();
+    }
+}
+PROXY----------------------------------->
+//ProxyDemo
+package proxypattern;
+interface Image {
+    void display();
+}
+class RealImage implements Image {
+    private String filename;
+
+    public RealImage(String filename) {
+        this.filename = filename;
+        loadFromDisk();
+    }
+
+    private void loadFromDisk() {
+        System.out.println("Loading " + filename);
+    }
+
+    public void display() {
+        System.out.println("Displaying " + filename);
+    }
+}
+class ProxyImage implements Image {
+    private RealImage realImage;
+    private String filename;
+
+    public ProxyImage(String filename) {
+        this.filename = filename;
+    }
+
+    public void display() {
+        if (realImage == null)
+            realImage = new RealImage(filename);
+        realImage.display();
+    }
+}
+public class ProxyDemo {
+    public static void main(String[] args) {
+        Image image = new ProxyImage("photo1.jpg");
+
+        // image loaded only once
+        image.display();
+        image.display();
+    }
+}
+PIZZA--------------------------------------->
+
+//PizzaDecoratorDemo
+package pizzadecorator;
+
+// Component
+interface Pizza {
+    String getDescription();
+    double getCost();
+}
+
+// Concrete Component
+class BasicPizza implements Pizza {
+    public String getDescription() { return "Plain Pizza"; }
+    public double getCost() { return 100; }
+}
+
+// Decorator
+abstract class ToppingDecorator implements Pizza {
+    protected Pizza pizza;
+    public ToppingDecorator(Pizza pizza) { this.pizza = pizza; }
+}
+
+// Concrete Decorators
+class Cheese extends ToppingDecorator {
+    public Cheese(Pizza pizza) { super(pizza); }
+    public String getDescription() { return pizza.getDescription() + ", Cheese"; }
+    public double getCost() { return pizza.getCost() + 20; }
+}
+
+class Olives extends ToppingDecorator {
+    public Olives(Pizza pizza) { super(pizza); }
+    public String getDescription() { return pizza.getDescription() + ", Olives"; }
+    public double getCost() { return pizza.getCost() + 15; }
+}
+
+class Mushrooms extends ToppingDecorator {
+    public Mushrooms(Pizza pizza) { super(pizza); }
+    public String getDescription() { return pizza.getDescription() + ", Mushrooms"; }
+    public double getCost() { return pizza.getCost() + 25; }
+}
+
+// Test
+public class PizzaDecoratorDemo {
+    public static void main(String[] args) {
+        Pizza pizza = new BasicPizza();
+        pizza = new Cheese(pizza);
+        pizza = new Olives(pizza);
+        pizza = new Mushrooms(pizza);
+
+        System.out.println("Order: " + pizza.getDescription());
+        System.out.println("Total Cost: ₹" + pizza.getCost());
+    }
+}
+EMPLOYEE------------------------------------->
+// CompositeDemo.java
+package compositepattern;
+public class CompositeDemo {
+    public static void main(String[] args) {
+        Employee manager1 = new Employee("John", "Manager");
+        Employee emp1 = new Employee("Alice", "Developer");
+        Employee emp2 = new Employee("Bob", "Tester");
+
+        manager1.add(emp1);
+        manager1.add(emp2);
+
+        Employee generalManager = new Employee("Sarah", "General Manager");
+        generalManager.add(manager1);
+
+        generalManager.showEmployeeDetails();
+    }
+}
+----->
+// Employee.java
+package compositepattern;
+import java.util.*;
+
+class Employee {
+    private String name;
+    private String position;
+    private List<Employee> subordinates;
+
+    public Employee(String name, String position) {
+        this.name = name;
+        this.position = position;
+        subordinates = new ArrayList<>();
+    }
+
+    public void add(Employee e) { subordinates.add(e); }
+    public void remove(Employee e) { subordinates.remove(e); }
+    public List<Employee> getSubordinates() { return subordinates; }
+
+    public void showEmployeeDetails() {
+        System.out.println(position + ": " + name);
+        for (Employee e : subordinates) {
+            e.showEmployeeDetails();
+        }
+    }
+}
+
