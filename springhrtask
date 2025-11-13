@@ -1,0 +1,197 @@
+
+File → New → Spring Starter Project
+Name: HRApplication
+Type: Maven
+Dependencies: Spring Web, Spring Boot DevTools
+Package: com.hr
+//DemohrApplication
+package com.hr;
+
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+
+@SpringBootApplication
+public class DemohrappApplication {
+
+	public static void main(String[] args) {
+		SpringApplication.run(DemohrappApplication.class, args);
+	}
+}
+
+//Employee.java
+package com.hr;
+public class Employee {
+    private int id;
+    private String name;
+    private String designation;
+
+    public Employee(int id, String name, String designation) {
+        this.id = id;
+        this.name = name;
+        this.designation = designation;
+    }
+    public int getId() { return id; }
+    public String getName() { return name; }
+    public String getDesignation() { return designation; }
+}
+//EmployeeController.java
+package com.hr;
+
+import java.util.List;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
+import com.hr.Employee;
+import com.hr.service;
+
+@RestController
+@RequestMapping("/employees")
+public class EmployeeController {
+    @Autowired
+    private service service;
+
+    @GetMapping
+    public List<Employee> getEmployees() {
+        return service.getAllEmployees();
+    }
+}
+//HrApplication
+package com.hr;
+
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+
+@SpringBootApplication
+public class HrApplication {
+    public static void main(String[] args) {
+        SpringApplication.run(HrApplication.class, args);
+        System.out.println("HR Application Started...");
+    }
+}
+
+/*Run the App
+
+Right-click HrApplication.java → Run As → Spring Boot App
+
+Open browser → http://localhost:8080/employees */
+
+//service.java
+package com.hr;
+
+import java.util.*;
+import org.springframework.stereotype.Service;
+import com.hr.Employee;
+
+@Service
+public class service {
+    private List<Employee> employees = new ArrayList<>();
+
+    public service() {
+        employees.add(new Employee(1, "Prachi", "HR Manager"));
+        employees.add(new Employee(2, "Ravi", "Developer"));
+    }
+
+    public List<Employee> getAllEmployees() {
+        return employees;
+    }
+}
+
+New Spring Boot project → TaskManager
+Dependencies: Spring Web
+Package: com.task
+
+//DemoTaskManagerApplication
+package com.task;
+
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+
+@SpringBootApplication
+public class DemoTaskManagerApplication {
+
+	public static void main(String[] args) {
+		SpringApplication.run(DemoTaskManagerApplication.class, args);
+	}
+
+}
+//Task
+package com.task;
+
+import java.time.LocalDate;
+
+public class Task {
+    private int id;
+    private String title;
+    private String category;
+    private LocalDate dueDate;
+
+    public Task(int id, String title, String category, LocalDate dueDate) {
+        this.id = id;
+        this.title = title;
+        this.category = category;
+        this.dueDate = dueDate;
+    }
+
+    public int getId() { return id; }
+    public String getTitle() { return title; }
+    public String getCategory() { return category; }
+    public LocalDate getDueDate() { return dueDate; }
+}
+//TaskController
+package com.task;
+
+import java.util.List;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
+import com.task.Task;
+import com.task.TaskService;
+
+@RestController
+@RequestMapping("/tasks")
+public class TaskController {
+    @Autowired
+    private TaskService service;
+
+    @GetMapping
+    public List<Task> getTasks() {
+        return service.getAllTasks();
+    }
+}
+//TaskManagerApplication
+package com.task;
+
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+
+@SpringBootApplication
+public class TaskManagerApplication {
+    public static void main(String[] args) {
+        SpringApplication.run(TaskManagerApplication.class, args);
+        System.out.println("Task Management App Running...");
+    }
+}
+/*▶ Run App
+
+Right-click TaskManagerApplication.java → Run As → Spring Boot App
+
+Open http://localhost:8080/tasks*/
+
+//TaskService
+package com.task;
+
+import java.time.LocalDate;
+import java.util.*;
+import org.springframework.stereotype.Service;
+import com.task.Task;
+
+@Service
+public class TaskService {
+    private List<Task> tasks = new ArrayList<>();
+
+    public TaskService() {
+        tasks.add(new Task(1, "Finish report", "Work", LocalDate.now().plusDays(2)));
+        tasks.add(new Task(2, "Buy groceries", "Personal", LocalDate.now().plusDays(1)));
+    }
+
+    public List<Task> getAllTasks() { return tasks; }
+    public void addTask(Task task) { tasks.add(task); }
+}
