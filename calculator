@@ -168,3 +168,16 @@ public class ISPWorkerDemo {
         RobotWorker r=new RobotWorker(); r.work();r.getPaid();
     }
 }
+
+//LSPBirdDemo
+class Bird { void eat(){ System.out.println("Bird eating"); } }
+class FlyingBird extends Bird { void fly(){ System.out.println("Bird flying"); } }
+class Sparrow extends FlyingBird { }
+class Penguin extends Bird { void swim(){ System.out.println("Penguin swimming"); } }
+
+public class LSPBirdDemo {
+    public static void main(String[] args){
+        Sparrow s=new Sparrow(); s.eat(); s.fly();
+        Penguin p=new Penguin(); p.eat(); p.swim();
+    }
+}
